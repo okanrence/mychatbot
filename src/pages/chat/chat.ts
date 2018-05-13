@@ -1,10 +1,13 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { Events, Content } from 'ionic-angular';
-import { ChatService, ChatMessage, UserInfo } from "../../providers/chat-service/chat-service";
+import { ChatService } from "../../providers/chat-service/chat-service";
+import { ChatMessage } from "../../interfaces/chat-message";
+import { UserInfo } from "../../interfaces/user-info";
 import { TextToSpeech } from '@ionic-native/text-to-speech';
 import { SpeechRecognition } from '@ionic-native/speech-recognition';
 import {  NgZone } from '@angular/core';
+import { HttpServiceProvider } from '../../providers/http-service/http-service';
 
 @IonicPage()
 @Component({
@@ -20,18 +23,20 @@ export class Chat {
   toUser: UserInfo;
   editorMsg = '';
   showEmojiPicker = false;
-
+  useVoice = true;
   isListening: boolean = false;
   matches: Array<String>;
 
   constructor(navParams: NavParams,
               private chatService: ChatService,
               private events: Events,
-              private ttsCtrl : TextToSpeech, private speech : SpeechRecognition, private zone: NgZone ) {
+              private ttsCtrl : TextToSpeech, private speech : SpeechRecognition,
+               private zone: NgZone, private httpCtrl : HttpServiceProvider
+              ) {
     // Get the navParams toUserId parameter
     this.toUser = {
-      id: navParams.get('toUserId'),
-      name: navParams.get('toUserName')
+      id: '210000198410281948',
+      name: 'Tamara'
     };
     // Get mock user information
     this.chatService.getUserInfo()
@@ -53,6 +58,10 @@ export class Chat {
     this.events.subscribe('chat:received', msg => {
       this.pushNewMsg(msg);
     })
+  }
+
+  toggleVoiceMode(){
+     this.useVoice = !this.useVoice;
   }
 
   onFocus() {
@@ -79,7 +88,7 @@ export class Chat {
   getMsg() {
     // Get mock message list
     return this.chatService
-    .getMsgList()
+    .getOldMessages()
     .subscribe(res => {
       this.msgList = res;
       this.scrollToBottom();
@@ -125,6 +134,7 @@ export class Chat {
    * @name pushNewMsg
    * @param msg
    */
+
   pushNewMsg(msg: ChatMessage) {
     const userId = this.user.id,
       toUserId = this.toUser.id;
@@ -133,8 +143,18 @@ export class Chat {
       this.msgList.push(msg);
     } else if (msg.toUserId === userId && msg.userId === toUserId) {
       this.msgList.push(msg);
+        if(this.useVoice){
+          this.Speak(msg.message);
+        }
     }
+
     this.scrollToBottom();
+  }
+
+  Speak(text){
+    this.ttsCtrl.speak(text)
+    .then(() => { console.log('Success'); } )
+    .catch((reason: any) => console.log(reason));
   }
 
   getMsgIndexById(id: string) {
@@ -145,6 +165,7 @@ export class Chat {
     setTimeout(() => {
       if (this.content.scrollToBottom) {
         this.content.scrollToBottom();
+
       }
     }, 400)
   }
@@ -175,10 +196,9 @@ export class Chat {
       .subscribe(matches => {
         __this.zone.run(() => {
           __this.editorMsg = matches[0];
-        this. sendMsg();
+        this.sendMsg();
         })
       }, error => console.error(error));
-
   }
 
   toggleListenMode():void {

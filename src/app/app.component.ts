@@ -5,7 +5,6 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { HomePage } from '../pages/home/home';
 import { ListPage } from '../pages/list/list';
-import { ChatViewPage } from '../pages/chat-view/chat-view';
 import { SpeechRecognition } from '@ionic-native/speech-recognition';
 import { Chat } from '../pages/chat/chat';
 
@@ -15,7 +14,7 @@ import { Chat } from '../pages/chat/chat';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = HomePage;
+  rootPage: any = Chat;
 
   pages: Array<{title: string, component: any}>;
 
@@ -33,8 +32,8 @@ export class MyApp {
     
     this.pages = [
       { title: 'Conversations', component: Chat },
-      { title: 'Settings', component: Chat },
-      { title: 'Logout', component: Chat }
+      { title: 'Settings', component: Chat }
+     // { title: 'Logout', component: Chat }
      
     ];
 

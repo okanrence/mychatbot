@@ -6,7 +6,6 @@ import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { Chat } from '../pages/chat/chat';
 import { ListPage } from '../pages/list/list';
-import { ChatViewPage } from '../pages/chat-view/chat-view';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -16,25 +15,34 @@ import { SpeechRecognition } from '@ionic-native/speech-recognition';
 import { ChatService } from '../providers/chat-service/chat-service';
 import { HttpClientModule } from "@angular/common/http";
 import { PipesModule } from "../pipes/pipes.module";
-//import { RelativeTime } from "../pipes/relative-time/relative-time";
+import { HttpServiceProvider } from '../providers/http-service/http-service';
+import { HttpModule } from '@angular/http'
+import { Device } from '@ionic-native/device';
+import { NotificationsServiceProvider } from '../providers/notifications-service/notifications-service';
+import { StorageServiceProvider } from '../providers/storage-service/storage-service';
+import { IonicStorageModule } from '@ionic/storage';
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
     ListPage,
-    ChatViewPage,Chat
+    Chat
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp),HttpClientModule,PipesModule
+    IonicModule.forRoot(MyApp),
+    HttpClientModule,
+    PipesModule,
+    HttpModule,
+    IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
     HomePage,
     ListPage,
-    ChatViewPage, Chat
+    Chat
   ],
   providers: [
     StatusBar,
@@ -43,6 +51,10 @@ import { PipesModule } from "../pipes/pipes.module";
     SpeechRecognition,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     ChatService,
+    HttpServiceProvider,
+    Device,
+    NotificationsServiceProvider,
+    StorageServiceProvider
   ]
 })
 export class AppModule {}
